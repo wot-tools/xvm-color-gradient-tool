@@ -1,0 +1,169 @@
+﻿<Window x:Class="XVMCGT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:XVMCGT;assembly=" xmlns:l="clr-namespace:XVMCGT.Properties"
+        Title="XVM Color Gradient Tool" Height="516" Width="895"
+        Icon="img/icon/s3al_emblem_64x64.ico" Loaded="Window_Loaded" Closing="Window_Closing">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="Style_Textbox_LongTextWrap">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+        </Style>
+        <Style TargetType="{x:Type Separator}" x:Key="VSeparator">
+            <Setter Property="Margin" Value="3,0,3,0"/>
+            <Setter Property="LayoutTransform">
+                <Setter.Value>
+                    <TransformGroup>
+                        <TransformGroup.Children>
+                            <TransformCollection>
+                                <RotateTransform Angle="90"/>
+                            </TransformCollection>
+                        </TransformGroup.Children>
+                    </TransformGroup>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <!--<Setter Property="RowBackground" Value="LightGray"/>
+            <Setter Property="AlternatingRowBackground" Value="DarkGray"/>-->
+        </Style>
+    </Window.Resources>
+    <Grid Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="6"/>
+            <ColumnDefinition Width="Auto" MinWidth="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Settings" Grid.Row="0">
+            <StackPanel Margin="3">
+                <CheckBox Content="Start maximized" IsChecked="{Binding settings.StartMaximized,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Content="Round values to nearest integer" IsChecked="{Binding settings.RoundValuesToInteger,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Click="CheckBox_Click"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Steps" Grid.Row="1">
+            <local:Custom_DoubleUpDown Grid.Column="1" Grid.Row="1" DefaultValue="10" Value="3" Minimum="0" Maximum="1000" Interval="1" TrailingDigits="0" Height="25"
+                                       x:Name="CDUP_Steps" ValueChanged="CDUP_Steps_ValueChanged" Margin="3"/>
+        </GroupBox>
+        <GroupBox Grid.Row="2">
+            <GroupBox.Header>
+                <TextBlock Text="Source Json" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
+            </GroupBox.Header>
+
+            <Grid Margin="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" MinHeight="200"/>
+                    <RowDefinition Height="3"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <local:DelayedTextBox x:Name="DTB_Json_Source" Grid.Column="2" Grid.Row="0" DelayedTextChanged="DTB_Json_Source_DelayedTextChanged"/>
+
+                <Grid IsEnabled="True" Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Config file" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+                    <TextBox Text="C:/World of S3ALs/res_mods/xvm/config/richblaster/warpack.xc" Grid.Column="2" Grid.Row="0" FontSize="10" IsReadOnly="True"
+                             Name="TB_ConfigPath"/>
+                    <Button Name="BT_Json_OpenConfigFile_Source" Grid.Column="4" Grid.Row="0" Width="20" Click="BT_Json_OpenConfigFile_Source_Click">
+                        <Image Source="img/app/folder_add.png" />
+                    </Button>
+
+                    <TextBlock Text="Color type" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                    <ComboBox Name="CB_Json_Config_ColorType_Source" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,2,0,0"
+                              SelectionChanged="CB_Json_Config_ColorType_Source_SelectionChanged" IsEnabled="False" DisplayMemberPath="Name"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="3">
+            <GroupBox.Header>
+                <TextBlock Name="TB_Header_Gradient_Source" Text="Gradient (0 steps)" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+            </GroupBox.Header>
+
+            <DataGrid Name="DG_Gradient_Source">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Preview">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Rectangle Height="20" Width="40" Fill="{Binding Brush}" Margin="0,0,3,0"/>
+                                    <TextBlock Text="Richblaster is a seal." Foreground="{Binding Brush}" Grid.Column="1"/>
+                                </Grid>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding HexCode}" Header="Hexcode"/>
+                    <DataGridTextColumn Binding="{Binding Value}" Header="Value"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="2" Grid.RowSpan="10">
+            <GroupBox.Header>
+                <TextBlock Name="TB_Header_Gradient" Text="Gradient (x steps)" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+            </GroupBox.Header>
+
+            <DataGrid Name="DG_Values">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Preview">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Rectangle Height="20" Width="40" Fill="{Binding Brush}" Margin="0,0,3,0"/>
+                                    <TextBlock Text="Richblaster is a seal." Foreground="{Binding Brush}" Grid.Column="1"/>
+                                </Grid>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding HexCode}" Header="Hexcode"/>
+                    <DataGridTextColumn Binding="{Binding Value}" Header="Value"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+        <GroupBox Grid.Column="3" Grid.RowSpan="10">
+            <GroupBox.Header>
+                <TextBlock Text="Json" FontWeight="Bold" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
+            </GroupBox.Header>
+
+            <TextBox Name="TBox_FinalValues" Grid.Column="2" Grid.Row="1" Style="{StaticResource Style_Textbox_LongTextWrap}"/>
+        </GroupBox>
+    </Grid>
+</Window>
